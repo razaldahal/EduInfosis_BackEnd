@@ -1,0 +1,4 @@
+drf-nested-routers
+drf-yasg
+corsheaders
+django-filter-2.1.0
