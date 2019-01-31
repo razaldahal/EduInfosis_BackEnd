@@ -9,7 +9,7 @@ router.register(r'schedule',views.ExamScheduleViewset)
 router.register(r'subject',views.SubjectViewSet)
 router.register(r'marks-entry',views.MarksEntryViewSet)
 router.register(r'view-result',views.ViewResultViewSet)
-#router.register(r'prepare-result',views.ResultPrepareViewSet)
+router.register(r'prepare_result',views.PrepareResultViewSet)
 
 
 urlpatterns = [

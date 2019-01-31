@@ -56,6 +56,7 @@ class StudentMarksSerializer(serializers.Serializer):
     name = serializers.CharField()
     theory = serializers.IntegerField()
     practical = serializers.IntegerField()
+    discipline = serializers.IntegerField(default=0)
 
 class MarksEntrySerializer(serializers.Serializer):
     section = serializers.IntegerField()

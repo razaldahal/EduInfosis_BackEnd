@@ -127,6 +127,8 @@ class ClassExamTermViewSet(viewsets.ViewSet):
             dct = {
                "id":term.id,
                "name":term.name,
+               "start_date":term.start_date,
+               "end_date":term.end_date,
   
                }
             output.append(dct)

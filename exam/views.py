@@ -97,11 +97,12 @@ class ExamTermViewset(viewsets.ViewSet):
             
             if c_id and _c_id:
                 _exm,c = ExamTerm.objects.get_or_create(name = data['name'],
+                                                     _class_id= data['_class'],
                                                     defaults = {
                                                         'start_date':data['start_date'],
                                                         'end_date':data['end_date'],
                                                         'course_id':data['course'],
-                                                        '_class_id':data['_class']
+                                                        
                                                     })
                 if not c:
                     raise serializers.ValidationError({
@@ -264,6 +265,7 @@ class MarksEntryViewSet(viewsets.ViewSet):
                 obj,created = MarksEntryDetail.objects.get_or_create(student_id=dct['id'],
                                                                     marks_entry_id=me.id,
                                                                 defaults={
+                                                                    'discipline':dct['discipline'],
                                                                     'theory':dct['theory'],
                                                                     'practical':dct['practical'],
                                                                     'full_marks':marks_type['full_marks'],
@@ -284,9 +286,6 @@ class MarksEntryViewSet(viewsets.ViewSet):
         raise serializers.ValidationError({
             "Detail":[serializer.errors]
         })
-
-
-
 
 class ViewResultViewSet(viewsets.ViewSet):
     queryset = MarksEntryDetail.objects.all()
@@ -322,9 +321,73 @@ class ViewResultViewSet(viewsets.ViewSet):
        
         return Response(mydict,status=status.HTTP_200_OK)
 
-# class ResultPrepareViewSet(viewsets.ViewSet):
-#     def retrieve(self,request,)
+class PrepareResultViewSet(viewsets.ViewSet):
+    queryset = MarksEntry.objects.all()
+
+    def get_filter(self,section_id,subject_id,exam_id):
+        return MarksEntryDetail.objects.filter(marks_entry__section_id=
+                                                section_id,
+                                                marks_entry__subject_id=
+                                                subject_id,
+                                                marks_entry__exam_id=
+                                                exam_id,)
+
+    def create(self,request):
+        data = request.data
+        print(data)
+    
+        for objs in data['result_preparation']:
+            obj = MarksEntryDetail.objects.filter(student_id=objs['student_id'])
+        
+            for o in obj:
+                sub_id = o.marks_entry.subject.id
+                if sub_id == data['subject']:
+                    # print("Student_id",o.student.user.first_name)
+                    o.discipline = objs['discipline']
+                    o.save()
+                
+
+        
+        return Response(data,status=status.HTTP_201_CREATED)
+
+  
+
+    def list(self,request):
+        searchword=request.GET
+        section_id = searchword.get('section')
+        subject_id = searchword.get('subject')
+        exam_id = searchword.get('exam')
+        med = self.get_filter(section_id,subject_id,exam_id)
+        output = []
+        for marks in med:
+            temp = {
+                'student_id':marks.student.id,
+                'student_name':marks.student.user.first_name + ' ' + marks.student.user.last_name,
+                'theory':marks.theory ,
+                'practical':marks.practical,
+                'total':marks.theory + marks.practical,
+                'discipline':marks.discipline,
+               
+            }
+            output.append(temp)
+        return Response(output,status=status.HTTP_200_OK)
 
 
 
+# output = {}
+# med = MarksEntryDetail.objects.filter(marks_entry__section_id=<input>, ....)
+# for m in med:
+#     student_id = m.student.id
 
+#     tmp = {
+#         'student_name': m.student.first_name,
+#         'theory' : m.theory
+#     }
+#     if student_id not in output:
+#         output[student_id] = tmp
+#     else:
+#         tmp1 = output[student_id]
+#         tmp1['theory'] += m.theory
+#         output[student_id] = tmp1
+
+    

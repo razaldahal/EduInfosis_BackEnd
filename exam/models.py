@@ -39,12 +39,16 @@ class MarksEntryDetail(BaseModel):
     student = models.ForeignKey(Student,on_delete=models.CASCADE)
     theory = models.IntegerField()
     practical = models.IntegerField()
+    discipline = models.IntegerField()
     full_marks = models.IntegerField()
     full_marks_th = models.IntegerField()
     full_marks_pr = models.IntegerField()
     pass_marks = models.IntegerField()
     pass_marks_th = models.IntegerField()
     pass_marks_pr  = models.IntegerField()
+
+    def __str__(self):
+        return self.student.user.first_name
     
 
 
