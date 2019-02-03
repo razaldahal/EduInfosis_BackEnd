@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'exam',
     'admission',
     'student',
-    
+    'accounting',
     'teacher'
 ]
 
