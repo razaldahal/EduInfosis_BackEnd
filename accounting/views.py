@@ -79,9 +79,32 @@ class DailyExpenseViewSet(viewsets.ViewSet):
         })
 
     
+class FeeCategoryViewSet(viewsets.ModelViewSet):
+    queryset = FeeCategory.objects.all()
+    serializer_class = FeeCategorySerializer
+
+class FeeAllocationViewSet(viewsets.ViewSet):
+    queryset = FeeAllocation.objects.all()
+
+    def create(self,request):
+        serializer = FeeAllocationSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.data
+            fee_for = data['fee_for']
+
+            if fee_for==2:
+                obj.c = FeeAllocation.objects.get_or_create(fee_category=data['fee_category'],
+                                                            _class_id = data['_class'],
+                                                            defaults = {
+                                                                'total_amount':data['total_amount']
+                                                            })
+            return Response("kdshdj")
+        else:
+            raise serializers.ValidationError({
+                'Detail':[serializer.errors]
+            })
 
 
 
 
-			
 			
