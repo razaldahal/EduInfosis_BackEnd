@@ -92,19 +92,60 @@ class FeeAllocationViewSet(viewsets.ViewSet):
             data = serializer.data
             fee_for = data['fee_for']
 
+            if fee_for == 1:
+                class_obj = Class.objects.all()
+                
+                for c_obj in class_obj:
+                    class_id = c_obj.id
+                    c_filter = FeeAllocation.objects.filter(_class_id=class_id,fee_category_id=data['fee_category'])
+                    if not c_filter:
+                        obj,created = FeeAllocation.objects.get_or_create(fee_category_id=data['fee_category'],
+                                                                _class_id =class_id,
+                                                                defaults = {
+                                                                    'total_amount':data['total_amount']
+                                                                })
+                   
+                        # if not created:
+                        #     return Response("Class Already Existttrfy",status=status.HTTP_400_BAD_REQUEST)
+                        # if created:
+                        #     return Response(data,status=status.HTTP_201_CREATED)
+                        
+                    if c_filter:
+                        print(class_id)
+                return Response(data,status=status.HTTP_201_CREATED)
+
             if fee_for==2:
-                obj.c = FeeAllocation.objects.get_or_create(fee_category=data['fee_category'],
+                obj,created = FeeAllocation.objects.get_or_create(fee_category_id=data['fee_category'],
                                                             _class_id = data['_class'],
                                                             defaults = {
                                                                 'total_amount':data['total_amount']
                                                             })
-            return Response("kdshdj")
+                if not created:
+                    return Response("Fee Category & Class Should be Unique",status=status.HTTP_400_BAD_REQUEST)
+
+                if created:
+                    return Response(data,status=status.HTTP_201_CREATED)
+            
+
+           
         else:
             raise serializers.ValidationError({
                 'Detail':[serializer.errors]
             })
 
-
+    def list(self,request):
+        queryset = self.queryset
+        output = []
+        for q in queryset:
+            temp ={
+                'id':q.id,
+                'course':q._class.course.name,
+                'class':q._class.name,
+                'fee_category':q.fee_category.name,
+                'total_amount':q.total_amount
+            }
+            output.append(temp)
+        return Response(output,status=status.HTTP_200_OK)
 
 
 			
