@@ -149,3 +149,34 @@ class FeeAllocationViewSet(viewsets.ViewSet):
 
 
 			
+class ExpenseReportViewset(viewsets.ViewSet):
+    queryset=DailyExpense.objects.all()
+
+    def list(self,request):
+        r=request.GET
+        res=[]
+
+        if 'from_date' in r:
+            v=r.get('from_date')
+            vt=r.get('to_date')
+            de=DailyExpense.objects.filter(expense_date__range=[v,vt])
+          
+
+        elif 'category' in r:
+            v=r.get('category')
+            de=DailyExpense.objects.filter(expense_type__name=v)
+
+
+        val=de.values()
+        res=[obj for obj in val]
+        return Response(res)
+        
+    
+
+
+
+                
+                    
+
+
+            
